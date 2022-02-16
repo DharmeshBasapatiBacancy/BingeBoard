@@ -15,7 +15,7 @@ class MoviesViewModel @Inject constructor(private val moviesRepository: MoviesRe
         fetchMovies()
     }
 
-    private fun fetchMovies() {
+    fun fetchMovies() {
         viewModelScope.launch {
             moviesRepository.fetchMovies()
         }
@@ -39,5 +39,6 @@ class MoviesViewModel @Inject constructor(private val moviesRepository: MoviesRe
         Log.d(TAG, "getMoviesFromApi: $apiResponse")
         Log.d(TAG, "getMoviesFromApi: API Call Ends")
     }*/
+
 
 }

@@ -20,11 +20,29 @@ class MoviesRepository @Inject constructor(
 
     private val moviesResponse = MutableLiveData<Resource<List<Movie>>>()
 
+    private val watchLaterMoviesResponse = MutableLiveData<Resource<List<Movie>>>()
+
+    fun getWatchLaterMovies(): LiveData<Resource<List<Movie>>> = watchLaterMoviesResponse
+
+    suspend fun addMovieToWatchLater(movieId: Int) {
+        movieDao.addOrRemoveMovieFromWatchLater(1, movieId)
+    }
+
+    suspend fun removeMovieFromWatchLater(movieId: Int) {
+        movieDao.addOrRemoveMovieFromWatchLater(0, movieId)
+    }
+
+    suspend fun fetchWatchLaterMoviesList() {
+
+        watchLaterMoviesResponse.postValue(Resource.Success(movieDao.getWatchLaterMovies()))
+
+    }
+
     suspend fun fetchMovies() {
 
         moviesResponse.postValue(Resource.Loading(null))
 
-        if(NetworkUtils.isNetworkConnected(context)){
+        if (NetworkUtils.isNetworkConnected(context) && movieDao.getMovies().isEmpty()) {
             Log.d(TAG, "fetchMovies: NETWORK FOUND")
             val apiResult = apiService.getAllMovies(BuildConfig.API_KEY)
 
@@ -34,7 +52,7 @@ class MoviesRepository @Inject constructor(
             } else {
                 moviesResponse.postValue(Resource.Error(null, apiResult.errorBody().toString()))
             }
-        }else{
+        } else {
             Log.d(TAG, "fetchMovies: NETWORK NOT FOUND")
             moviesResponse.postValue(Resource.Success(movieDao.getMovies()))
         }

@@ -8,11 +8,11 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.bingeboard.BuildConfig
 import com.example.bingeboard.R
-import com.example.bingeboard.databinding.RowItemMoviesBinding
+import com.example.bingeboard.databinding.RowItemWatchLaterMovieBinding
 import com.example.bingeboard.network.models.Movie
 
-class MovieAdapter(private val onItemClick: (Movie) -> Unit) :
-    ListAdapter<Movie, MovieAdapter.ViewHolder>(DiffUtil()) {
+class WatchLaterMovieAdapter(private val onItemClick: (Movie) -> Unit) :
+    ListAdapter<Movie, WatchLaterMovieAdapter.ViewHolder>(DiffUtil()) {
 
     class DiffUtil : androidx.recyclerview.widget.DiffUtil.ItemCallback<Movie>() {
         override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean {
@@ -25,23 +25,19 @@ class MovieAdapter(private val onItemClick: (Movie) -> Unit) :
 
     }
 
-    class ViewHolder(private val rowItemMoviesBinding: RowItemMoviesBinding) :
-        RecyclerView.ViewHolder(rowItemMoviesBinding.root) {
+    class ViewHolder(private val rowItemWatchLaterMovieBinding: RowItemWatchLaterMovieBinding) :
+        RecyclerView.ViewHolder(rowItemWatchLaterMovieBinding.root) {
         fun bind(item: Movie, onItemClick: (Movie) -> Unit) {
-            rowItemMoviesBinding.apply {
+            rowItemWatchLaterMovieBinding.apply {
 
                 tvMovieName.text = item.title
                 Glide.with(itemView.context)
                     .load(BuildConfig.IMAGES_BASE_URL + item.poster_path)
+                    .apply(
+                        RequestOptions().placeholder(R.drawable.ic_launcher_foreground)
+                    )
                     .into(imgMovie)
-
-                if (item.isWatchLater == 1) {
-                    imgWatchLater.setImageResource(R.drawable.ic_baseline_favorite_24)
-                } else {
-                    imgWatchLater.setImageResource(R.drawable.ic_baseline_favorite_border_24)
-                }
-
-                imgWatchLater.setOnClickListener {
+                btnRemoveFromWatchLater.setOnClickListener {
                     onItemClick(item)
                 }
             }
@@ -50,12 +46,12 @@ class MovieAdapter(private val onItemClick: (Movie) -> Unit) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
-        RowItemMoviesBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        RowItemWatchLaterMovieBinding.inflate(LayoutInflater.from(parent.context), parent, false)
     )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
-        holder.bind(item, onItemClick)
+        holder.bind(item,onItemClick)
     }
 
 }

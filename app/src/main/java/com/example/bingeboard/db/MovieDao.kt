@@ -1,9 +1,6 @@
 package com.example.bingeboard.db
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.example.bingeboard.network.models.Movie
 
 @Dao
@@ -14,5 +11,11 @@ interface MovieDao {
 
     @Query("SELECT * FROM movie")
     suspend fun getMovies(): List<Movie>
+
+    @Query("SELECT * FROM movie WHERE isWatchLater=1")
+    suspend fun getWatchLaterMovies(): List<Movie>
+
+    @Query("UPDATE movie SET isWatchLater=:isWatchLater WHERE id = :movieId")
+    suspend fun addOrRemoveMovieFromWatchLater(isWatchLater: Int, movieId: Int)
 
 }

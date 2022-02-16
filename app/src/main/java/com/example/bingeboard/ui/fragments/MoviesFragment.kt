@@ -13,6 +13,7 @@ import com.example.bingeboard.databinding.FragmentMoviesBinding
 import com.example.bingeboard.network.models.Movie
 import com.example.bingeboard.ui.adapters.MovieAdapter
 import com.example.bingeboard.ui.viewmodels.MoviesViewModel
+import com.example.bingeboard.ui.viewmodels.WatchLaterMoviesViewModel
 import com.example.bingeboard.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,6 +24,7 @@ class MoviesFragment : Fragment() {
     private lateinit var binding: FragmentMoviesBinding
 
     private val moviesViewModel: MoviesViewModel by viewModels()
+    private val watchLaterMoviesViewModel: WatchLaterMoviesViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,8 +44,7 @@ class MoviesFragment : Fragment() {
             Log.d(TAG, "onCreateView: $it")
             when (it) {
                 is Resource.Loading -> {
-                    Toast.makeText(requireContext(), "Loading...", Toast.LENGTH_SHORT)
-                        .show()
+                    //Loading stuff
                 }
                 is Resource.Success -> {
                     it.data?.let { it1 -> updateList(it1) }
@@ -62,7 +63,17 @@ class MoviesFragment : Fragment() {
 
     private fun setupList() {
 
-        movieAdapter = MovieAdapter()
+        movieAdapter = MovieAdapter() {
+            if (it.isWatchLater == 1) {
+                watchLaterMoviesViewModel.removeFromWatchLater(it.id)
+                Toast.makeText(requireContext(), "Removed from Watch Later", Toast.LENGTH_SHORT)
+                    .show()
+            } else {
+                watchLaterMoviesViewModel.addToWatchLater(it.id)
+                Toast.makeText(requireContext(), "Added to Watch Later", Toast.LENGTH_SHORT).show()
+            }
+            moviesViewModel.fetchMovies()
+        }
 
         binding.rvMovies.apply {
             layoutManager = GridLayoutManager(requireContext(), 2)

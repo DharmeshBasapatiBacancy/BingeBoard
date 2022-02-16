@@ -8,11 +8,11 @@
     <fragment
         android:id="@+id/moviesFragment"
         android:name="com.example.bingeboard.ui.fragments.MoviesFragment"
-        android:label="Movies"
+        android:label="@string/app_name"
         tools:layout="@layout/fragment_movies" />
     <fragment
         android:id="@+id/watchLaterFragment"
         android:name="com.example.bingeboard.ui.fragments.WatchLaterFragment"
-        android:label="Watch Later"
+        android:label="@string/app_name"
         tools:layout="@layout/fragment_watch_later" />
 </navigation>
