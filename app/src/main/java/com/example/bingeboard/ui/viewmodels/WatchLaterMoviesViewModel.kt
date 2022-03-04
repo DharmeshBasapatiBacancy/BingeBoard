@@ -12,39 +12,20 @@ class WatchLaterMoviesViewModel @Inject constructor(private val moviesRepository
     ViewModel() {
 
     init {
-
         fetchWatchLaterMovies()
-
     }
 
     private fun fetchWatchLaterMovies() {
-
         viewModelScope.launch {
-
             moviesRepository.fetchWatchLaterMoviesList()
-
         }
-
     }
 
-    fun addToWatchLater(movieId: Int) {
-
+    fun addOrRemoveMoviesInWatchLater(isWatchLater:Int,movieId: Int) {
         viewModelScope.launch {
-
-            moviesRepository.addMovieToWatchLater(movieId)
+            moviesRepository.addOrRemoveMovieInWatchLater(isWatchLater,movieId)
             fetchWatchLaterMovies()
         }
-
-    }
-
-    fun removeFromWatchLater(movieId: Int) {
-
-        viewModelScope.launch {
-
-            moviesRepository.removeMovieFromWatchLater(movieId)
-            fetchWatchLaterMovies()
-        }
-
     }
 
     fun getWatchLaterMovies() = moviesRepository.getWatchLaterMovies()

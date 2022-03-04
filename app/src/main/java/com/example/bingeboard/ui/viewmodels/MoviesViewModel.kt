@@ -2,43 +2,40 @@ package com.example.bingeboard.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bingeboard.repository.MoviesRepository
+import androidx.paging.*
+import com.example.bingeboard.db.MovieDatabase
+import com.example.bingeboard.network.ApiService
+import com.example.bingeboard.network.models.Movie
+import com.example.bingeboard.repository.MoviesRemoteMediator
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MoviesViewModel @Inject constructor(private val moviesRepository: MoviesRepository) :
+class MoviesViewModel @Inject constructor(
+    private val apiService: ApiService,
+    private val movieDatabase: MovieDatabase
+) :
     ViewModel() {
 
     init {
-        fetchMovies()
+        //fetchMovies()
     }
 
     fun fetchMovies() {
         viewModelScope.launch {
-            moviesRepository.fetchMovies()
+            //moviesRepository.fetchMovies()
         }
     }
 
-    fun getAllMovies() = moviesRepository.getAllMovies()
+    @OptIn(ExperimentalPagingApi::class)
+    fun getMoviesList(): Flow<PagingData<Movie>> = Pager(
+        config = PagingConfig(20, enablePlaceholders = false),
+        pagingSourceFactory = { movieDatabase.movieDao().getMovies() },
+        remoteMediator = MoviesRemoteMediator(apiService, movieDatabase)
+    ).flow.cachedIn(viewModelScope)
 
-    /*suspend fun getMoviesFromApi() {
-        var apiResponse = "Nothing"
-        Log.d(TAG, "getMoviesFromApi: API Call Started")
-        val apiJob = CoroutineScope(Dispatchers.IO).launch {
-            val result = apiService.getAllMovies("be77fc9011234ea2a705be52eeef238b")
-            Log.d(TAG, "getMoviesFromApi: GOT THE RESPONSE")
-            apiResponse = if (result.isSuccessful) {
-                "API CALL SUCCESS"
-            } else {
-                "API CALL FAILURE"
-            }
-        }
-        apiJob.join()
-        Log.d(TAG, "getMoviesFromApi: $apiResponse")
-        Log.d(TAG, "getMoviesFromApi: API Call Ends")
-    }*/
-
+    //fun getAllMovies() = moviesRepository.getAllMovies()
 
 }

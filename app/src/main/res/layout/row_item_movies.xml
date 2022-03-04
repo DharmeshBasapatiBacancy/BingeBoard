@@ -9,7 +9,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_225sdp">
+        android:layout_height="@dimen/_200sdp">
 
         <ImageView
             android:id="@+id/imgMovie"

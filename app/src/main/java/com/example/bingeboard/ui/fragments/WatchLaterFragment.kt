@@ -2,17 +2,19 @@ package com.example.bingeboard.ui.fragments
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.bingeboard.databinding.FragmentWatchLaterBinding
 import com.example.bingeboard.network.models.Movie
 import com.example.bingeboard.ui.adapters.WatchLaterMovieAdapter
 import com.example.bingeboard.ui.viewmodels.WatchLaterMoviesViewModel
+import com.example.bingeboard.utils.hide
+import com.example.bingeboard.utils.show
+import com.example.bingeboard.utils.showToast
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -35,15 +37,15 @@ class WatchLaterFragment : Fragment() {
 
                 setupList(it.data)
 
-                binding.rvWatchLaterMovies.visibility = View.VISIBLE
-                binding.tvNotFound.visibility = View.GONE
-                binding.imgNotFound.visibility = View.GONE
+                binding.rvWatchLaterMovies.show()
+                binding.tvNotFound.hide()
+                binding.imgNotFound.hide()
 
             } else {
 
-                binding.rvWatchLaterMovies.visibility = View.GONE
-                binding.imgNotFound.visibility = View.VISIBLE
-                binding.tvNotFound.visibility = View.VISIBLE
+                binding.rvWatchLaterMovies.hide()
+                binding.imgNotFound.show()
+                binding.tvNotFound.show()
 
             }
         }
@@ -54,8 +56,8 @@ class WatchLaterFragment : Fragment() {
     private fun setupList(data: List<Movie>) {
 
         watchLaterMovieAdapter = WatchLaterMovieAdapter() {
-            watchLaterMoviesViewModel.removeFromWatchLater(it.id)
-            Toast.makeText(requireContext(), "Removed from Watch Later", Toast.LENGTH_SHORT).show()
+            watchLaterMoviesViewModel.addOrRemoveMoviesInWatchLater(0, it.id)
+            requireContext().showToast("Removed from Watch Later")
         }
 
         binding.rvWatchLaterMovies.apply {

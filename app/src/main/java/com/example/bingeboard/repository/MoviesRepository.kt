@@ -18,29 +18,18 @@ class MoviesRepository @Inject constructor(
     private val context: Context
 ) {
 
+    companion object {
+        private const val TAG = "MoviesRepository"
+    }
+
+    //Movies List Related Code
     private val moviesResponse = MutableLiveData<Resource<List<Movie>>>()
 
-    private val watchLaterMoviesResponse = MutableLiveData<Resource<List<Movie>>>()
-
-    fun getWatchLaterMovies(): LiveData<Resource<List<Movie>>> = watchLaterMoviesResponse
-
-    suspend fun addMovieToWatchLater(movieId: Int) {
-        movieDao.addOrRemoveMovieFromWatchLater(1, movieId)
-    }
-
-    suspend fun removeMovieFromWatchLater(movieId: Int) {
-        movieDao.addOrRemoveMovieFromWatchLater(0, movieId)
-    }
-
-    suspend fun fetchWatchLaterMoviesList() {
-
-        watchLaterMoviesResponse.postValue(Resource.Success(movieDao.getWatchLaterMovies()))
-
-    }
+    fun getAllMovies(): LiveData<Resource<List<Movie>>> = moviesResponse
 
     suspend fun fetchMovies() {
 
-        moviesResponse.postValue(Resource.Loading(null))
+        /*moviesResponse.postValue(Resource.Loading(null))
 
         if (NetworkUtils.isNetworkConnected(context) && movieDao.getMovies().isEmpty()) {
             Log.d(TAG, "fetchMovies: NETWORK FOUND")
@@ -55,14 +44,21 @@ class MoviesRepository @Inject constructor(
         } else {
             Log.d(TAG, "fetchMovies: NETWORK NOT FOUND")
             moviesResponse.postValue(Resource.Success(movieDao.getMovies()))
-        }
+        }*/
 
     }
 
-    fun getAllMovies(): LiveData<Resource<List<Movie>>> = moviesResponse
+    //Watch Later Movies Related Code
+    private val watchLaterMoviesResponse = MutableLiveData<Resource<List<Movie>>>()
 
-    companion object {
-        private const val TAG = "MoviesRepository"
+    fun getWatchLaterMovies(): LiveData<Resource<List<Movie>>> = watchLaterMoviesResponse
+
+    suspend fun addOrRemoveMovieInWatchLater(isWatchLater:Int,movieId: Int) {
+        movieDao.addOrRemoveMovieFromWatchLater(isWatchLater, movieId)
+    }
+
+    suspend fun fetchWatchLaterMoviesList() {
+        watchLaterMoviesResponse.postValue(Resource.Success(movieDao.getWatchLaterMovies()))
     }
 
 }

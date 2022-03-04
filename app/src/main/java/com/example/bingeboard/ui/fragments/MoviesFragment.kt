@@ -5,9 +5,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.bingeboard.databinding.FragmentMoviesBinding
 import com.example.bingeboard.network.models.Movie
@@ -15,15 +16,21 @@ import com.example.bingeboard.ui.adapters.MovieAdapter
 import com.example.bingeboard.ui.viewmodels.MoviesViewModel
 import com.example.bingeboard.ui.viewmodels.WatchLaterMoviesViewModel
 import com.example.bingeboard.utils.Resource
+import com.example.bingeboard.utils.showToast
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MoviesFragment : Fragment() {
 
-    private lateinit var movieAdapter: MovieAdapter
     private lateinit var binding: FragmentMoviesBinding
 
-    private val moviesViewModel: MoviesViewModel by viewModels()
+    private lateinit var movieAdapter: MovieAdapter
+
+    private lateinit var moviesViewModel: MoviesViewModel
     private val watchLaterMoviesViewModel: WatchLaterMoviesViewModel by viewModels()
 
     override fun onCreateView(
@@ -33,14 +40,19 @@ class MoviesFragment : Fragment() {
 
         binding = FragmentMoviesBinding.inflate(layoutInflater)
 
-        setupList()
-        setupObserver()
+        moviesViewModel = ViewModelProvider(requireActivity())[MoviesViewModel::class.java]
 
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupList()
+        setupObserver()
+    }
+
     private fun setupObserver() {
-        moviesViewModel.getAllMovies().observe(requireActivity()) {
+        /*moviesViewModel.getAllMovies().observe(requireActivity()) {
             Log.d(TAG, "onCreateView: $it")
             when (it) {
                 is Resource.Loading -> {
@@ -50,27 +62,30 @@ class MoviesFragment : Fragment() {
                     it.data?.let { it1 -> updateList(it1) }
                 }
                 is Resource.Error -> {
-                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT)
-                        .show()
+                    it.message?.let { it1 -> requireContext().showToast(it1) }
                 }
+            }
+        }*/
+        lifecycleScope.launch {
+            moviesViewModel.getMoviesList().collectLatest {
+                movieAdapter.submitData(it)
             }
         }
     }
 
     private fun updateList(data: List<Movie>) {
-        movieAdapter.submitList(data)
+        //movieAdapter.submitData(data)
     }
 
     private fun setupList() {
 
         movieAdapter = MovieAdapter() {
             if (it.isWatchLater == 1) {
-                watchLaterMoviesViewModel.removeFromWatchLater(it.id)
-                Toast.makeText(requireContext(), "Removed from Watch Later", Toast.LENGTH_SHORT)
-                    .show()
+                watchLaterMoviesViewModel.addOrRemoveMoviesInWatchLater(0,it.id)
+                requireContext().showToast("Removed from Watch Later")
             } else {
-                watchLaterMoviesViewModel.addToWatchLater(it.id)
-                Toast.makeText(requireContext(), "Added to Watch Later", Toast.LENGTH_SHORT).show()
+                watchLaterMoviesViewModel.addOrRemoveMoviesInWatchLater(1,it.id)
+                requireContext().showToast("Added to Watch Later")
             }
             moviesViewModel.fetchMovies()
         }

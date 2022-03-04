@@ -1,5 +1,6 @@
 package com.example.bingeboard.db
 
+import androidx.paging.PagingSource
 import androidx.room.*
 import com.example.bingeboard.network.models.Movie
 
@@ -10,7 +11,10 @@ interface MovieDao {
     suspend fun addMovies(moviesList: List<Movie>)
 
     @Query("SELECT * FROM movie")
-    suspend fun getMovies(): List<Movie>
+    fun getMovies(): PagingSource<Int, Movie>
+
+    @Query("DELETE FROM movie")
+    fun clearAll()
 
     @Query("SELECT * FROM movie WHERE isWatchLater=1")
     suspend fun getWatchLaterMovies(): List<Movie>

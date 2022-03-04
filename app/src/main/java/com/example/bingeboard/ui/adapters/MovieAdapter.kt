@@ -2,6 +2,8 @@ package com.example.bingeboard.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -12,9 +14,9 @@ import com.example.bingeboard.databinding.RowItemMoviesBinding
 import com.example.bingeboard.network.models.Movie
 
 class MovieAdapter(private val onItemClick: (Movie) -> Unit) :
-    ListAdapter<Movie, MovieAdapter.ViewHolder>(DiffUtil()) {
+    PagingDataAdapter<Movie, MovieAdapter.ViewHolder>(DiffUtil) {
 
-    class DiffUtil : androidx.recyclerview.widget.DiffUtil.ItemCallback<Movie>() {
+    object DiffUtil : androidx.recyclerview.widget.DiffUtil.ItemCallback<Movie>() {
         override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean {
             return oldItem.id == newItem.id
         }
@@ -55,7 +57,7 @@ class MovieAdapter(private val onItemClick: (Movie) -> Unit) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
-        holder.bind(item, onItemClick)
+        holder.bind(item!!, onItemClick)
     }
 
 }
