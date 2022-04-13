@@ -4,10 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
+import coil.load
 import com.example.bingeboard.BuildConfig
-import com.example.bingeboard.R
 import com.example.bingeboard.databinding.RowItemWatchLaterMovieBinding
 import com.example.bingeboard.network.models.Movie
 
@@ -31,12 +29,7 @@ class WatchLaterMovieAdapter(private val onItemClick: (Movie) -> Unit) :
             rowItemWatchLaterMovieBinding.apply {
 
                 tvMovieName.text = item.title
-                Glide.with(itemView.context)
-                    .load(BuildConfig.IMAGES_BASE_URL + item.poster_path)
-                    .apply(
-                        RequestOptions().placeholder(R.drawable.ic_launcher_foreground)
-                    )
-                    .into(imgMovie)
+                imgMovie.load(BuildConfig.IMAGES_BASE_URL + item.poster_path)
                 btnRemoveFromWatchLater.setOnClickListener {
                     onItemClick(item)
                 }

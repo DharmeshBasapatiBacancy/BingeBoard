@@ -3,11 +3,8 @@ package com.example.bingeboard.ui.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
+import coil.load
 import com.example.bingeboard.BuildConfig
 import com.example.bingeboard.R
 import com.example.bingeboard.databinding.RowItemMoviesBinding
@@ -33,9 +30,12 @@ class MovieAdapter(private val onItemClick: (Movie) -> Unit) :
             rowItemMoviesBinding.apply {
 
                 tvMovieName.text = item.title
-                Glide.with(itemView.context)
-                    .load(BuildConfig.IMAGES_BASE_URL + item.poster_path)
-                    .into(imgMovie)
+
+                imgMovie.load(BuildConfig.IMAGES_BASE_URL + item.poster_path){
+                    crossfade(true)
+                    placeholder(R.drawable.ic_launcher_foreground)
+                    //transformations(CircleCropTransformation())
+                }
 
                 if (item.isWatchLater == 1) {
                     imgWatchLater.setImageResource(R.drawable.ic_baseline_favorite_24)
